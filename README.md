@@ -99,6 +99,12 @@ yum clean all
 yum check-update
 ```
 
+Tambahkan GPG Key Untuk CentOS 7
+
+```
+curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+```
+
 ---
 
 ### **1. Linux Hardening**
