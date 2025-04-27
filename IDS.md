@@ -112,30 +112,46 @@ Tambahkan rules berikut:
 ### 5.1 SQL Injection Detection
 
 ```bash
-alert tcp any any -> any 80 (msg: "Error Based SQL Injection Detected"; content: "%27"; sid:100000011;)
-alert tcp any any -> any 80 (msg: "Error Based SQL Injection Detected"; content: "22"; sid:100000012;)
-alert tcp any any -> any 80 (msg: "AND SQL Injection Detected"; content: "and"; nocase; sid:100000060;)
-alert tcp any any -> any 80 (msg: "OR SQL Injection Detected"; content: "or"; nocase; sid:100000061;)
-alert tcp any any -> any 80 (msg: "Form Based SQL Injection Detected"; content: "%27"; sid:1000003;)
-alert tcp any any -> any 80 (msg: "Order by SQL Injection"; content: "order"; sid:1000005;)
-alert tcp any any -> any 80 (msg: "UNION SELECT SQL Injection"; content: "union"; sid:1000006;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: Single Quote"; content:"'"; nocase; sid:10000101; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: Double Quote"; content:"\""; nocase; sid:10000102; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: Comment --"; content:"--"; nocase; sid:10000103; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: OR 1=1"; content:"OR 1=1"; nocase; sid:10000104; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: UNION SELECT"; content:"UNION SELECT"; nocase; sid:10000105; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: DROP TABLE"; content:"DROP TABLE"; nocase; sid:10000106; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: xp_cmdshell"; content:"xp_cmdshell"; nocase; sid:10000107; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: information_schema"; content:"information_schema"; nocase; sid:10000108; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: Error Message"; content:"SQL syntax"; nocase; sid:10000109; rev:1;)
+alert tcp any any -> any 80 (msg:"SQLi Attempt: CAST("; content:"CAST("; nocase; sid:10000110; rev:1;)
 ```
 
 ### 5.2 Brute Force Attack Detection
 
 ```bash
-alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "Brute Force Detected"; sid:10; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg:"Brute Force SSH Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000201; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 21 (msg:"Brute Force FTP Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000202; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"Brute Force SMTP Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000203; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 3389 (msg:"Brute Force RDP Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000204; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 3306 (msg:"Brute Force MySQL Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000205; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 1433 (msg:"Brute Force MSSQL Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000206; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 1521 (msg:"Brute Force Oracle Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000207; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 8080 (msg:"Brute Force Web Login Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000208; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 5900 (msg:"Brute Force VNC Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000209; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"General Brute Force Attempt"; content:"login"; nocase; threshold:type threshold, track by_src, count 5, seconds 60; sid:10000210; rev:1;)
 ```
 
 ### 5.3 XSS Attack Detection
 
 ```bash
-alert tcp any any -> any any (msg:"XSS Attack"; content:"script"; sid:10000007; rev:002;)
-alert tcp any any -> $HOME_NET any (msg:"XSS Attack"; content:"img"; sid:10000002; rev:002;)
-alert tcp any any -> $HOME_NET any (msg:"XSS Attack"; content:"%3C"; sid:10000003; rev:002;)
-alert tcp any any -> $HOME_NET any (msg:"XSS Attack"; content:"%3E"; sid:10000004; rev:002;)
-alert tcp any any -> $HOME_NET any (msg:"XSS Attack"; content:"%22"; sid:10000005; rev:002;)
-alert tcp any any -> $HOME_NET any (msg:"XSS Attack"; content:"%27"; sid:10000006; rev:002;)
+alert tcp any any -> any any (msg:"XSS Attempt: <script>"; content:"<script>"; nocase; sid:10000301; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: </script>"; content:"</script>"; nocase; sid:10000302; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: onerror event"; content:"onerror="; nocase; sid:10000303; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: onclick event"; content:"onclick="; nocase; sid:10000304; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: onload event"; content:"onload="; nocase; sid:10000305; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: iframe tag"; content:"<iframe"; nocase; sid:10000306; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: javascript: protocol"; content:"javascript:"; nocase; sid:10000307; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: <img src=>"; content:"<img src="; nocase; sid:10000308; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: document.cookie access"; content:"document.cookie"; nocase; sid:10000309; rev:1;)
+alert tcp any any -> any any (msg:"XSS Attempt: alert() function"; content:"alert("; nocase; sid:10000310; rev:1;)
 ```
 
 ---
