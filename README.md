@@ -94,6 +94,8 @@ metadata_expire=never
 Cek konfigurasi
 ```
 yum clean all
+```
+```
 yum check-update
 ```
 
