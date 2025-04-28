@@ -70,44 +70,6 @@ echo "Ini ditandatangani" | gpg --clearsign > signed.txt
 gpg --verify signed.txt
 ```
 
----
-
-### **5. Web Protection: ModSecurity & ModEvasive**
-📌 *Goal:* Mencegah DoS dan input berbahaya ke server
-
-#### Instalasi:
-```bash
-yum install mod_security mod_evasive -y
-systemctl restart httpd
-```
-
-#### Konfigurasi:
-- ModEvasive:
-```conf
-DOSHashTableSize 3097
-DOSPageCount 2
-DOSSiteCount 50
-```
-- Uji dengan `ab -n 1000 -c 100 http://localhost/`
-
----
-
-### **6. Security Headers (Apache)**
-📌 *Goal:* Menambal header yang lemah agar tidak bisa di-exploit
-
-#### Konfigurasi:
-Tambahkan di `/etc/httpd/conf/httpd.conf` atau `.htaccess`:
-```apache
-Header always set Strict-Transport-Security "max-age=31536000"
-Header always set X-Frame-Options "SAMEORIGIN"
-Header always set X-Content-Type-Options "nosniff"
-Header always set Referrer-Policy "no-referrer"
-Header always set Permissions-Policy "camera=(), microphone=()"
-Header always set Content-Security-Policy "default-src 'self'"
-```
-
----
-
 ### **7. Capture The Flag (CTF)**
 📌 *Goal:* Mendeteksi dan mengeksploitasi kerentanan umum
 
